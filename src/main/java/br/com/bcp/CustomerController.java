@@ -17,10 +17,13 @@ public class CustomerController {
     @Autowired
 	private CustomerRepository customerRep;
 
+    @Autowired
+	private CustomerAddrRepository addrRep;
+
     private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
 
     @GetMapping("/customer/{id}")
-	public Customer greeting(@PathVariable(value = "id") Long id) {
+	public Customer getCustomerById(@PathVariable(value = "id") Long id) {
         Optional<Customer> customer = customerRep.findById(id);
         if (customer.isPresent()) {
             log.info("Found customer with ID {}: {}", id, customer.get());
@@ -32,7 +35,24 @@ public class CustomerController {
 	}
 
     @PostMapping("/customer")
-	public Customer greeting(@RequestBody Customer customer) {
+	public Customer saveCustomer(@RequestBody Customer customer) {
         return customerRep.save(customer);
+	}
+
+    @GetMapping("/addr/{id}")
+	public CustomerAddress getAddrById(@PathVariable(value = "id") Long id) {
+        Optional<CustomerAddress> addr = addrRep.findById(id);
+        if (addr.isPresent()) {
+            log.info("Found addr with ID {}: {}", id, addr.get());
+            return addr.get();
+        } else {
+            log.info("Addr with ID {} not found", id);
+            return null;
+        }
+	}
+
+    @PostMapping("/addr")
+	public CustomerAddress saveAddr(@RequestBody CustomerAddress addr) {
+        return addrRep.save(addr);
 	}
 }
