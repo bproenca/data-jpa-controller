@@ -1,4 +1,4 @@
-package br.com.bcp;
+package br.com.bcp.api;
 
 import java.util.Optional;
 
@@ -11,20 +11,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.bcp.dto.CustomerAddress;
+import br.com.bcp.dto.CustomerInCreate;
+import br.com.bcp.dto.CustomerOutRead;
+import br.com.bcp.rep.RepositoryAddress;
+import br.com.bcp.rep.RepositoryCustomerInCreate;
+import br.com.bcp.rep.RepositoryCustomerOutRead;
+
 @RestController
 public class CustomerController {
     
     @Autowired
-	private CustomerRepository customerRep;
+	private RepositoryCustomerInCreate repCustomerInCreate;
 
     @Autowired
-	private CustomerAddrRepository addrRep;
+	private RepositoryCustomerOutRead repCustomerOutRead;
+
+    @Autowired
+	private RepositoryAddress addrRep;
 
     private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
 
     @GetMapping("/customer/{id}")
-	public Customer getCustomerById(@PathVariable(value = "id") Long id) {
-        Optional<Customer> customer = customerRep.findById(id);
+	public CustomerOutRead getCustomerById(@PathVariable(value = "id") Long id) {
+        Optional<CustomerOutRead> customer = repCustomerOutRead.findById(id);
         if (customer.isPresent()) {
             log.info("Found customer with ID {}: {}", id, customer.get());
             return customer.get();
@@ -35,8 +45,10 @@ public class CustomerController {
 	}
 
     @PostMapping("/customer")
-	public Customer saveCustomer(@RequestBody Customer customer) {
-        return customerRep.save(customer);
+	public void saveCustomer(@RequestBody CustomerInCreate customer) {
+        customer = repCustomerInCreate.save(customer);
+        customer.updateIds();
+        customer.getAddrs().forEach(addr -> addrRep.save(addr));
 	}
 
     @GetMapping("/addr/{id}")
