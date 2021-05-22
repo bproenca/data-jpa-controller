@@ -1,6 +1,33 @@
 # BCP Spring JDBC Oracle
 
-Template (starter) form spring-jdbc with Oracle DB
+Template (starter) form spring-jpa with Oracle DB.  
+Controller receives Customer (with Addrs) and save all (parent and child entities).
+
+## Test
+
+Get a customer:
+```console
+curl --location --request GET 'http://localhost:8080/customer/131'
+```
+Save a customer:
+```console
+curl --location --request POST 'http://localhost:8080/customer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "firstName": "Bruno",
+    "lastName": "Proenca",
+    "addrs": [
+        {
+            "country": "US",
+            "city": "BBBB"
+        },
+        {
+            "country": "BR",
+            "city": "AAAA"
+        }
+    ]
+}'
+```
 
 ### Config Env:
 
