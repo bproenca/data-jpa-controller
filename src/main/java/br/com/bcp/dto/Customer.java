@@ -3,15 +3,17 @@ package br.com.bcp.dto;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
 
 @Entity(name = "CUSTOMER_TST")
-public class CustomerInCreate {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
@@ -19,10 +21,10 @@ public class CustomerInCreate {
     private Long id;
     private String firstName, lastName;
 
-    @Transient
-    private Set<CustomerAddress> addrs = new HashSet<>();
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Address> addrs = new HashSet<>();
 
-    public CustomerInCreate() { }
+    public Customer() { }
 
     public Long getId() {
         return id;
@@ -48,27 +50,27 @@ public class CustomerInCreate {
         this.lastName = lastName;
     }
 
-    public Set<CustomerAddress> getAddrs() {
+    public Set<Address> getAddrs() {
         return addrs;
     }
 
-    public void setAddrs(Set<CustomerAddress> addrs) {
+    public void setAddrs(Set<Address> addrs) {
         this.addrs = addrs;
     }
 
-    public void addAddress(CustomerAddress addr) {
+    public void addAddress(Address addr) {
         addrs.add(addr);
+    }
+
+    public void linkAddress() {
+        for (Address customerAddress : addrs) {
+            customerAddress.setCustomer(this);
+        }
     }
 
     @Override
     public String toString() {
         return "Customer [firstName=" + firstName + ", id=" + id + ", lastName=" + lastName + "]";
-    }
-
-    public void updateIds() {
-        for (CustomerAddress customerAddress : addrs) {
-            customerAddress.setCustomerId(this.id);
-        }
     }
 
     @Override
@@ -89,7 +91,7 @@ public class CustomerInCreate {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CustomerInCreate other = (CustomerInCreate) obj;
+        Customer other = (Customer) obj;
         if (firstName == null) {
             if (other.firstName != null)
                 return false;
@@ -107,6 +109,5 @@ public class CustomerInCreate {
             return false;
         return true;
     }
-
     
 }

@@ -1,26 +1,31 @@
 package br.com.bcp.dto;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name = "CUSTOMER_ADDR_TST")
-public class CustomerAddress {
+public class Address {
     
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
     @SequenceGenerator(sequenceName = "CUSTOMER_SEQ_TST", allocationSize = 3, name = "seq_generator")
     private Long id;
 
-    @Column(name = "CUSTOMER_ID")
-    private Long customerId;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID")
+    private Customer customer;
     
     private String country, city;
 
-    public CustomerAddress() {
+    public Address() {
     }
 
     public Long getId() {
@@ -31,12 +36,12 @@ public class CustomerAddress {
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public String getCountry() {
@@ -57,8 +62,7 @@ public class CustomerAddress {
 
     @Override
     public String toString() {
-        return "CustomerAddress [city=" + city + ", country=" + country + ", customerId=" + customerId + ", id=" + id
-                + "]";
+        return "Address [city=" + city + ", country=" + country + ", id=" + id + "]";
     }
 
     @Override
@@ -67,7 +71,6 @@ public class CustomerAddress {
         int result = 1;
         result = prime * result + ((city == null) ? 0 : city.hashCode());
         result = prime * result + ((country == null) ? 0 : country.hashCode());
-        result = prime * result + ((customerId == null) ? 0 : customerId.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
@@ -80,7 +83,7 @@ public class CustomerAddress {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CustomerAddress other = (CustomerAddress) obj;
+        Address other = (Address) obj;
         if (city == null) {
             if (other.city != null)
                 return false;
@@ -90,11 +93,6 @@ public class CustomerAddress {
             if (other.country != null)
                 return false;
         } else if (!country.equals(other.country))
-            return false;
-        if (customerId == null) {
-            if (other.customerId != null)
-                return false;
-        } else if (!customerId.equals(other.customerId))
             return false;
         if (id == null) {
             if (other.id != null)
